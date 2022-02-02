@@ -11,19 +11,19 @@ const connectDB = require('./db/connect')
 const authUser = require('./routes/authUser')
 const portfolio = require('./routes/portfolio')
 
+const authenticateTalent = require('./middleware/authentication')
+
 app.use(express.json());
 
 //routes
 app.use(authUser)
-app.use(potfolio)
+app.use(authenticateTalent, portfolio)
 
 app.get('/', (req, res) => {
     res.send('Hellooo')
 })
 
-
 const port = process.env.PORT || 3000;
-
 
 const start = async () => {
     try {
