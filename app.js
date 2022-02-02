@@ -3,16 +3,21 @@ require('express-async-errors');
 
 
 const express = require('express')
-
 const app = express()
 
 const connectDB = require('./db/connect')
+
+//routers
 const authUser = require('./routes/authUser')
+const talentVerify = require('./routes/talentVerify')
+
+
 
 app.use(express.json());
 
+//routes
 app.use(authUser)
-
+app.use(talentVerify)
 
 app.get('/', (req, res) => {
     res.send('Hellooo')
