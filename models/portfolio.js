@@ -1,4 +1,4 @@
-const { ref } = require('joi')
+// const { ref } = require('joi')
 const mongoose = require('mongoose')
 
 const PortfolioSchema = new mongoose.Schema({
@@ -8,43 +8,34 @@ const PortfolioSchema = new mongoose.Schema({
         maxlength:100,
         minlength:[7, 'Name is too short'],
     },
-
     profilePicture:{
-        img:{
-            data: Buffer,
-            ContentType:String,
-        }
+        type: Buffer
     },
-
     description:{
         type:String,
         required:[true, 'Please provide your description'],
-        
     },
-
-    listofSkills:{
-        type:Array,
-        required:[true, 'Please provide your skills '],
-
-    },
-
-    projectDone :{
-        type:Array,
-
-
-    },
-
+    listOfSkills: [{
+        skill: {
+            type: String,
+            required: true
+        }
+    }],
+    projectsDone : [{
+        project: {
+            type: String,
+        }
+    }],
     price:{
+        // charge for service
         type: Number,
-
+        required: true
     },
-
-    picturesWork: {
-        img:{
-            data: Buffer,
-            ContentType:String,
-        },
-    },
+    picturesOfWork: [{
+        workPicture: {
+            type: Buffer
+        }
+    }],
     createdBy:{
         type: mongoose.Types.ObjectId,
         ref: 'Portfolio',

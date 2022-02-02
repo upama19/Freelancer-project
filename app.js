@@ -9,15 +9,13 @@ const connectDB = require('./db/connect')
 
 //routers
 const authUser = require('./routes/authUser')
-const talentVerify = require('./routes/talentVerify')
-
-
+const portfolio = require('./routes/portfolio')
 
 app.use(express.json());
 
 //routes
 app.use(authUser)
-app.use(talentVerify)
+app.use(potfolio)
 
 app.get('/', (req, res) => {
     res.send('Hellooo')
