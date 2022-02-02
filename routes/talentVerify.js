@@ -2,7 +2,7 @@ const router = require('express').Router()
 
 const { portfolioSetup } = require('../controller/talentVerify')
 
-router.post('/login/portfolio', portfolioSetup)
+router.post('/login/talent/portfolio',portfolioSetup)
 
 
 

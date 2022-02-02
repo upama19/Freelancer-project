@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 
 const Employer = require('../models/employer');
 const Talent = require('../models/talent');
+const employer = require('../models/employer');
 
 const registerEmployer = async (req,res)=>{
     const employer = await Employer.create({ ...req.body })
@@ -18,35 +19,62 @@ const registerTalent = async (req,res) =>{
     res.status(StatusCodes.CREATED).json({talent, token})
 }
 
-const login = async (req,res) =>{
+const loginEmployer = async (req,res) =>{
     const {email, password } = req.body
 
     if(!email || !password){
         throw new Error ('Please provide email and password.')
     }
 
-    // User consists of employer and talent, both
-    const user = await Employer.findOne({email}) || await Talent.findOne({email})
     
-    if(!user) {
+    const employer = await Employer.findOne({email})
+    
+    if(!employer) {
         throw new Error('Invalid credentials')
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password)
+    const isPasswordCorrect = await bcrypt.compare(password, employer.password)
 
     if(!isPasswordCorrect) {
         throw new Error('Invalid credentials')
     }
 
-    const token = user.createJWT()
+    const token = employer.createJWT()
 
-    res.status(StatusCodes.OK).json({user, token})
+    res.status(StatusCodes.OK).json({employer, token})
 }
+const loginTalent = async (req,res) =>{
+    const {email, password } = req.body
+
+    if(!email || !password){
+        throw new Error ('Please provide email and password.')
+    }
+
+    
+    const talent = await Talent.findOne({email}) 
+    
+    if(!talent) {
+        throw new Error('Invalid credentials')
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, talent.password)
+
+    if(!isPasswordCorrect) {
+        throw new Error('Invalid credentials')
+    }
+
+    const token = talent.createJWT()
+
+    res.status(StatusCodes.OK).json({talent, token})
+}
+
 
 
 module.exports = {
     registerEmployer,
     registerTalent,
-    login
+    loginEmployer,
+    loginTalent,
+
 
 }
