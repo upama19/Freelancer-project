@@ -1,7 +1,6 @@
 require('dotenv').config();
 require('express-async-errors');
 
-
 const express = require('express')
 const app = express()
 
@@ -11,13 +10,13 @@ const connectDB = require('./db/connect')
 const authUser = require('./routes/authUser')
 const portfolio = require('./routes/portfolio')
 
-const authenticateTalent = require('./middleware/authentication')
+//const authenticateTalent = require('./middleware/authentication')
 
 app.use(express.json());
 
 //routes
 app.use(authUser)
-app.use(authenticateTalent, portfolio)
+app.use(portfolio)
 
 app.get('/', (req, res) => {
     res.send('Hellooo')
@@ -38,3 +37,4 @@ const start = async () => {
 };
 
 start();
+

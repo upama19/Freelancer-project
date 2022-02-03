@@ -48,6 +48,10 @@ const employerSchema = new mongoose.Schema({
                 throw new Error('Mobile Number has to be 10 digits')
             }
         }
+    },
+    role: {
+        type: String,
+        required: true
     }
 })
 
@@ -73,7 +77,7 @@ employerSchema.pre('save', async function(){
 
 
 employerSchema.methods.createJWT = function () {
-    return jwt.sign({ userId : this._id},process.env.JWT_SECRET, {
+    return jwt.sign({ userId : this._id, role: this.role }, process.env.JWT_SECRET, {
         expiresIn :process.env.JWT_LIFETIME,
     })
 }

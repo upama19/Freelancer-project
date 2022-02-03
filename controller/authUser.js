@@ -6,14 +6,20 @@ const Talent = require('../models/talent');
 const employer = require('../models/employer');
 
 const registerEmployer = async (req,res)=>{
-    const employer = await Employer.create({ ...req.body })
+    const employer = await Employer.create({ 
+        ...req.body,
+        role: 'employer'
+    })
     const token =  await employer.createJWT()
 
     res.status(StatusCodes.CREATED).json({employer, token})
 }
 
 const registerTalent = async (req,res) =>{
-    const talent = await Talent.create({ ...req.body })
+    const talent = await Talent.create({ 
+        ...req.body,
+        role: 'talent' 
+    })
     const token =  await talent.createJWT()
 
     res.status(StatusCodes.CREATED).json({talent, token})
@@ -40,9 +46,9 @@ const loginEmployer = async (req,res) =>{
     }
 
     const token = employer.createJWT()
-
     res.status(StatusCodes.OK).json({employer, token})
 }
+
 const loginTalent = async (req,res) =>{
     const {email, password } = req.body
 
@@ -64,11 +70,8 @@ const loginTalent = async (req,res) =>{
     }
 
     const token = talent.createJWT()
-
     res.status(StatusCodes.OK).json({talent, token})
 }
-
-
 
 module.exports = {
     registerEmployer,

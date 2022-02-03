@@ -9,7 +9,7 @@ const PortfolioSchema = new mongoose.Schema({
         minlength:[7, 'Name is too short'],
     },
     profilePicture:{
-        type: Buffer
+        type: String
     },
     description:{
         type:String,
@@ -39,7 +39,7 @@ const PortfolioSchema = new mongoose.Schema({
     createdBy:{
         type: mongoose.Types.ObjectId,
         ref: 'Portfolio',
-        required: [true, 'Please provide usser']
+        required: [true, 'Please provide user']
     },
 
 },{timestamps:true})

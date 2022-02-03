@@ -39,7 +39,17 @@ const talentSchema = new mongoose.Schema({
                 throw new Error('Mobile Number has to be 10 digits')
             }
         }
+    },
+    role: {
+        type: String,
+        required: true
     }
+})
+
+talentSchema.virtual('portfolio', {
+    ref: 'Portfolio',
+    localField: '_id',
+    foreignField: 'createdBy'
 })
 
 talentSchema.methods.toJSON = function () {
@@ -64,7 +74,7 @@ talentSchema.pre('save', async function(){
 
 
 talentSchema.methods.createJWT = function () {
-    return jwt.sign({ userId : this._id},process.env.JWT_SECRET, {
+    return jwt.sign({ userId : this._id, role: this.role },process.env.JWT_SECRET, {
         expiresIn :process.env.JWT_LIFETIME,
     })
 }
