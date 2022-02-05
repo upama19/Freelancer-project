@@ -1,18 +1,19 @@
 const Portfolio = require('../models/portfolio')
 const {StatusCodes} = require('http-status-codes')
 const res = require('express/lib/response')
+const fs = require("fs");
 
 
 //Profile page displays the data from portfolio module through get request
 
 const getProfile = async (req,res) =>{
-
-    const { user: { userId}, params: { id: profileId}
+    const { params: { id: profileId}, user: {_id : userId}
 } =req
 
     const profile = await Portfolio.findOne({
         _id: profileId,
         createdBy: userId,
+
     }) 
 
     if(!profile){
@@ -27,39 +28,103 @@ const getProfile = async (req,res) =>{
 //talent has access to update their profile directlt from their profile
 const updateProfile = async (req,res) =>{
 
+    const img = req.files['profilePicture']
+        let profilePicture = undefined;
+        // if image was uploaded
+        if (img) {
+            profilePicture = fs.readFileSync(img[0].path).toString('base64')
+        }
+    const picturesArray = req.files['picturesOfWork']
+        let picturesOfWork = []
+        if (picturesArray) {
+            picturesOfWork = picturesArray.map(pictureFile => {
+                let picture = fs.readFileSync(pictureFile.path)
+                    // return picture.toString('base64')
+                return {
+                    workPicture: picture.toString('base64')
+                }
+            })
+        }
+    const skills = req.body.listOfSkills;
+        let listOfSkills = [];
+        if (skills) {
+            skills.forEach((skill) => {
+                listOfSkills.push({
+                    skill,
+                });
+            });
+        }
+
+    const projects = req.body.projectsDone;
+        let projectsDone = [];
+        if (projects) {
+            projects.forEach((project) => {
+                projectsDone.push({
+                    project,
+                });
+            });
+        }
+
+
+
+
     const {
-        body:{fullName, description, listOfSkills, price},
-        user: {userId},
+        body:{fullName, description, price},
+        user: {_id : userId},
         params:{ id: profileId},
-        files:{profilePicture,picturesOfWork },
     } = req 
-    let profile = await Portfolio.findOne({
+let profile = await Portfolio.findOne({
         _id: profileId,
         createdBy: userId,
     })
+
     if(!profile){
         throw new Error (`No talent with ID ${profileId} found`)
 
     }
 
     if (fullName === ''){
-        fullName = profile.fullName
+        throw new Error('Name cannot be empty')
     }
     if (description === ''){
-        description = profile.description
-    }
-
-    if (listOfSkills === ''){
-        listOfSkills = profile.listOfSkills
+        throw new Error('Description cannot be empty')
     }
 
     if(price === ''){
-        price = profile.price
+        throw new Error('Price cannot be empty')
     }
 
-    profile = await Portfolio.findByIdAndUpdate({_id: jobId, createdBy:userId}, req.body, req.files, {new:true, runValidators:true } )
+    if (listOfSkills.length === 0){
+        listOfSkills = listOfSkills.concat(profile.listOfSkills)
+    }
+    if (projectsDone.length === 0){
+        projectsDone = projectsDone.concat(profile.projectsDone)
+    }
+    if (picturesOfWork.length === 0){
+        picturesOfWork = picturesOfWork.concat(profile.picturesOfWork)
+    }
 
-    res.status(StatusCodes.OK).json({profile})
+// listOfSkills = profile.listOfSkills.concat(listOfSkills)
+// projectsDone = profile.projectsDone.concat(projectsDone)
+// picturesOfWork = profile.picturesOfWork.concat(picturesOfWork)
+
+req.body={
+    fullName: req.body.fullName,
+    profilePicture,
+    description: req.body.description,
+    listOfSkills,
+    projectsDone,
+    price: req.body.price,
+    picturesOfWork,
+    createdBy: req.user._id
+}
+
+
+    profile = await Portfolio.findByIdAndUpdate({_id: profileId, createdBy:userId},
+        req.body,
+        {new:true, runValidators:true } )
+
+    res.status(StatusCodes.OK).send('OK')
 
 }
 
@@ -68,18 +133,17 @@ const updateProfile = async (req,res) =>{
 const deleteProfile = async (req,res) =>{
     
 
-    const { user: { userId}, params: { id: profileId},
-} = req
-
+    const { params: { id: profileId}, user: {_id : userId}
+} =req
 const profile = await Portfolio.findByIdAndRemove({
     _id: profileId,
-    createdBy: userId
-})
+    createdBy: userId,
+
+}) 
 if(!profile){
     throw new Error (`No talent with ID ${profileId} found`)
 
 }
-
 
 res.status(StatusCodes.OK).send()
 }
