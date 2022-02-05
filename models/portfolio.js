@@ -38,7 +38,7 @@ const PortfolioSchema = new mongoose.Schema({
     }],
     createdBy:{
         type: mongoose.Types.ObjectId,
-        ref: 'Portfolio',
+        ref: 'Talent',
         required: [true, 'Please provide user']
     },
 

@@ -1,7 +1,7 @@
-const Talent = require('../models/talent')
+const Employer = require('../models/employer')
 const jwt = require('jsonwebtoken')
 
-const auth = async (req, res, next) => {
+const authEmployer = async (req, res, next) => {
     // check header 
     const authHeader = req.headers.authorization
     if(!authHeader || !authHeader.startsWith('Bearer ')){
@@ -14,12 +14,13 @@ const auth = async (req, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
 
-        if (payload.role === 'employer') {
-            return res.status(400).send('Employer cannot access this resource')
+        if (payload.role === 'talent') {
+            return res.status(400).send('Talent cannot access this resource')
         }
 
         const user = await Talent.findById({ _id: payload.userId })
         req.user = user
+        req.token = token
 
         next()
 
@@ -28,5 +29,4 @@ const auth = async (req, res, next) => {
     }
 }
 
-module.exports = auth
-
+module.exports = authEmployer
