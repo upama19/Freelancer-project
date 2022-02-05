@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs')
 
 const Employer = require('../models/employer');
 const Talent = require('../models/talent');
-const employer = require('../models/employer');
 
 const registerEmployer = async (req,res)=>{
     const employer = await Employer.create({ 
@@ -78,6 +77,4 @@ module.exports = {
     registerTalent,
     loginEmployer,
     loginTalent,
-
-
 }
