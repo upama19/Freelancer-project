@@ -43,6 +43,15 @@ const talentSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true
+    },
+    hiredBy: {
+        isHired: {
+            type: Boolean,
+            default: false
+        },
+        employer: {
+            type: mongoose.Schema.Types.ObjectId
+        }
     }
 })
 
@@ -52,7 +61,7 @@ talentSchema.virtual('portfolio', {
     foreignField: 'createdBy'
 })
 
-talentSchema.methods.toJSON = function () {
+talentSchema.methods.toJSON = function() {
     const talentObject = this.toObject()
 
     delete talentObject.password
@@ -61,9 +70,8 @@ talentSchema.methods.toJSON = function () {
     return talentObject
 }
 
-talentSchema.pre('save', async function(){
-    if (this.password !== this.confirmPassword)
-    {
+talentSchema.pre('save', async function() {
+    if (this.password !== this.confirmPassword) {
         throw new Error('Password does not match')
     }
 
@@ -73,9 +81,9 @@ talentSchema.pre('save', async function(){
 })
 
 
-talentSchema.methods.createJWT = function () {
-    return jwt.sign({ userId : this._id, role: this.role },process.env.JWT_SECRET, {
-        expiresIn :process.env.JWT_LIFETIME,
+talentSchema.methods.createJWT = function() {
+    return jwt.sign({ userId: this._id, role: this.role }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_LIFETIME,
     })
 }
 
