@@ -72,7 +72,9 @@ router.post(
                 projectsDone,
                 price: req.body.price,
                 picturesOfWork,
-                createdBy: req.user._id
+                createdBy: req.user._id,
+                category: req.body.category,
+                servicesOffered: req.body.servicesOffered
             })
             res.status(201).send(portfolio)
         } catch (error) {
