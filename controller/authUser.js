@@ -28,20 +28,20 @@ const loginEmployer = async (req,res) =>{
     const {email, password } = req.body
 
     if(!email || !password){
-        throw new Error ('Please provide email and password.')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Please provide email and password.' })
     }
 
     
     const employer = await Employer.findOne({email})
     
     if(!employer) {
-        throw new Error('Invalid credentials')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid credentials' })
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, employer.password)
 
     if(!isPasswordCorrect) {
-        throw new Error('Invalid credentials')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid credentials' })
     }
 
     const token = employer.createJWT()
@@ -52,20 +52,20 @@ const loginTalent = async (req,res) =>{
     const {email, password } = req.body
 
     if(!email || !password){
-        throw new Error ('Please provide email and password.')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Please provide email and password.' })
     }
 
     
     const talent = await Talent.findOne({email}) 
     
     if(!talent) {
-        throw new Error('Invalid credentials')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid credentials' })
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, talent.password)
 
     if(!isPasswordCorrect) {
-        throw new Error('Invalid credentials')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid credentials' })
     }
 
     const token = talent.createJWT()
