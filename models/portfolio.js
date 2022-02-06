@@ -56,5 +56,14 @@ const PortfolioSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
+// PortfolioSchema.methods.toJSON = function() {
+//     const portfolioObject = this.toObject()
+
+//     delete portfolioObject.profilePicture
+//     delete portfolioObject.picturesOfWork
+
+//     return portfolioObject
+// }
+
 
 module.exports = mongoose.model('Portfolio', PortfolioSchema)

@@ -1,55 +1,70 @@
-// const sharp = require('sharp');
-// const Talent = require('../models/talent')
+const Portfolio = require('../models/portfolio')
 
-// const saveProfilePicture = async (req, res) => {
-//     try {
-//         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
-//         req.user.profilePicture = buffer;
+const postPortfolioForm = async(req, res) => {
+    const img = req.files['profilePicture']
+    let profilePicture = undefined;
+    // if image was uploaded
+    if (img) {
+        profilePicture = fs.readFileSync(img[0].path).toString('base64')
+    }
 
-//         await req.user.save();
+    const picturesArray = req.files['picturesOfWork']
+    let picturesOfWork = []
+    if (picturesArray) {
+        picturesOfWork = picturesArray.map(pictureFile => {
+            let picture = fs.readFileSync(pictureFile.path)
+                // return picture.toString('base64')
+            return {
+                workPicture: picture.toString('base64')
+            }
+        })
+    }
 
-//         res.send();
-//     } catch (error) {
-//         res.status(400).send({ error: error.message });
-//     }
-// }
+    const skills = req.body.listOfSkills;
+    const listOfSkills = [];
+    if (skills) {
+        skills.forEach((skill) => {
+            listOfSkills.push({
+                skill,
+            });
+        });
+    }
 
-// const deleteProfilePicture = async (req, res) => {
-//     try {
-//         req.user.profilePicture = undefined;
-//         await req.user.save();
-//         res.send();
-//     } catch (error) {
-//         res.status(400).send({ error: error.message })
-//     }
-// }
+    const projects = req.body.projectsDone;
+    const projectsDone = [];
+    if (projects) {
+        projects.forEach((project) => {
+            projectsDone.push({
+                project,
+            });
+        });
+    }
 
-// const getProfilePicture = async (req, res) => {
-//     try {
-//         const talent = await Talent.findOne({ _id: req.user._id })
+    try {
+        const portfolio = await Portfolio.create({
+            fullName: req.body.fullName,
+            profilePicture,
+            description: req.body.description,
+            listOfSkills,
+            projectsDone,
+            price: req.body.price,
+            picturesOfWork,
+            createdBy: req.user._id,
+            category: req.body.category,
+            servicesOffered: req.body.servicesOffered
+        })
+        res.status(201).send(portfolio)
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'Your portfolio already exists' })
+        }
 
-//         if (!talent || !talent.portfolio.profilePicture) {
-//             throw new Error('Cannot find the required talent')
-//         }
+        res.status(400).send(error.message)
+    }
 
-//         res.set('Content-Type', 'image/png')
-//         res.send(talent.portfolio.profilePicture)
-//     } catch (error) {
-//         res.status(404).send()
-//     }
-// }
-
-const storePortfolioForm = async (req, res) => {
-    // for a single profile picture
-    const profilePicture = req.file
-    console.log(profilePicture)
-
-    res.send('You are a freelancer and you can access this resource')
+    //res.send("You are a freelancer and you can access this resource");
 }
 
 module.exports = {
-    // saveProfilePicture,
-    // deleteProfilePicture,
-    // getProfilePicture
-    storePortfolioForm
+    postPortfolioForm
 }
