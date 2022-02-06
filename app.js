@@ -14,7 +14,7 @@ const profile = require('./routes/profile')
     //const authenticateTalent = require('./middleware/authentication')
 
 app.use(express.json());
-app.use(cors)
+app.use(cors())
 //routes
 app.use(authUser)
 app.use(portfolio)
