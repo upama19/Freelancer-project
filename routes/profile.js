@@ -9,7 +9,7 @@ const picturesUpload = upload.fields([
     { name: "picturesOfWork", maxCount: 12 },
 ]);
 
-router.route('/talent/profile/:id').get(authenticateTalent, getProfile).patch(authenticateTalent,picturesUpload ,updateProfile).delete(authenticateTalent,deleteProfile)
+router.route('/talent/profile/:id').get(getProfile).patch(authenticateTalent,picturesUpload ,updateProfile).delete(authenticateTalent,deleteProfile)
 router.route('/employer/talent/profile/hire/:id').post(authenticateEmployer, hireTalent)
 
 module.exports = router

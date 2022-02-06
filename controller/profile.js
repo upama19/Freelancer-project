@@ -9,12 +9,10 @@ const fs = require("fs");
 const getProfile = async(req, res) => {
     const {
         params: { id: profileId },
-        user: { _id: userId }
     } = req
 
     const profile = await Portfolio.findOne({
         _id: profileId,
-        createdBy: userId,
 
     })
 
@@ -71,7 +69,7 @@ const updateProfile = async(req, res) => {
 
 
     const {
-        body: { fullName, description, price },
+        body: { fullName, description, price, category, serviceOffered },
         user: { _id: userId },
         params: { id: profileId },
     } = req
@@ -94,6 +92,12 @@ const updateProfile = async(req, res) => {
 
     if (price === '') {
         throw new Error('Price cannot be empty')
+    }
+    if (category === '') {
+        throw new Error('Categopry cannot be empty')
+    }
+    if (serviceOffered === '') {
+        throw new Error('ServviceOfered cannot be empty')
     }
 
     if (listOfSkills.length === 0) {
@@ -118,6 +122,8 @@ const updateProfile = async(req, res) => {
         projectsDone,
         price: req.body.price,
         picturesOfWork,
+        servicesOffered:req.body.serviceOffered,
+        category:req.body.category,
         createdBy: req.user._id
     }
 
@@ -125,7 +131,7 @@ const updateProfile = async(req, res) => {
     profile = await Portfolio.findByIdAndUpdate({ _id: profileId, createdBy: userId },
         req.body, { new: true, runValidators: true })
 
-    res.status(StatusCodes.OK).send('OK')
+    res.status(StatusCodes.OK).send(profile)
 
 }
 
