@@ -10,8 +10,8 @@ const connectDB = require('./db/connect')
 const authUser = require('./routes/authUser')
 const portfolio = require('./routes/portfolio')
 const talent = require('./routes/talent')
-
-//const authenticateTalent = require('./middleware/authentication')
+const profile = require('./routes/profile')
+    //const authenticateTalent = require('./middleware/authentication')
 
 app.use(express.json());
 
@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(authUser)
 app.use(portfolio)
 app.use(talent)
+app.use(profile)
 
 app.get('/', (req, res) => {
     res.send('Hellooo')

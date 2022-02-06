@@ -18,7 +18,7 @@ const authEmployer = async (req, res, next) => {
             return res.status(400).send('Talent cannot access this resource')
         }
 
-        const user = await Talent.findById({ _id: payload.userId })
+        const user = await Employer.findById({ _id: payload.userId })
         req.user = user
         req.token = token
 
