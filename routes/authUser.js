@@ -10,3 +10,4 @@ router.post('/login/employer',loginEmployer)
 router.post('/login/talent',loginTalent)
 
 module.exports = router
+module.exports = router

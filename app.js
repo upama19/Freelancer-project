@@ -3,7 +3,7 @@ require('express-async-errors');
 
 const express = require('express')
 const app = express()
-
+const cors = require('cors')
 const connectDB = require('./db/connect')
 
 //routers
@@ -14,12 +14,13 @@ const profile = require('./routes/profile')
     //const authenticateTalent = require('./middleware/authentication')
 
 app.use(express.json());
-
+app.use(cors)
 //routes
 app.use(authUser)
 app.use(portfolio)
 app.use(talent)
 app.use(profile)
+
 
 app.get('/', (req, res) => {
     res.send('Hellooo')
