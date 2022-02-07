@@ -55,13 +55,13 @@ const employerSchema = new mongoose.Schema({
     }
 })
 
-employerSchema.virtual('talents', {
-    ref: 'Talent',
-    localField: '_id',
-    foreignField: 'hiredBy.employer'
-})
+// employerSchema.virtual('talents', {
+//     ref: 'Talent',
+//     localField: '_id',
+//     foreignField: 'hiredBy.employer'
+// })
 
-employerSchema.methods.toJSON = function() {
+employerSchema.methods.toJSON = function () {
     const employerObject = this.toObject()
 
     delete employerObject.password
@@ -70,7 +70,7 @@ employerSchema.methods.toJSON = function() {
     return employerObject
 }
 
-employerSchema.pre('save', async function() {
+employerSchema.pre('save', async function () {
     if (this.password !== this.confirmPassword) {
         throw new Error('Password does not match')
     }
@@ -81,7 +81,7 @@ employerSchema.pre('save', async function() {
 })
 
 
-employerSchema.methods.createJWT = function() {
+employerSchema.methods.createJWT = function () {
     return jwt.sign({ userId: this._id, role: this.role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_LIFETIME,
     })
