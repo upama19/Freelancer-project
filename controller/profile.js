@@ -5,14 +5,17 @@ const fs = require("fs");
 
 
 //Profile page displays the data from portfolio module through get request
+const getAuthProfile = (req, res) => {
+    res.json(req.user)
+}
 
 const getProfile = async(req, res) => {
     const {
-        params: { id: profileId },
+        user: { _id: userId },
     } = req
 
     const profile = await Portfolio.findOne({
-        _id: profileId,
+        _id: userId,
 
     })
 
@@ -164,6 +167,7 @@ const hireTalent = async(req, res) => {
 }
 
 module.exports = {
+    getAuthProfile,
     getProfile,
     updateProfile,
     deleteProfile,
