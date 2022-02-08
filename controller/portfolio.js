@@ -1,11 +1,12 @@
 const Portfolio = require('../models/portfolio')
+const fs = require("fs")
 
 const postPortfolioForm = async(req, res) => {
     const img = req.files['profilePicture']
     let profilePicture = undefined;
     // if image was uploaded
     if (img) {
-        profilePicture = fs.readFileSync(img[0].path).toString('base64')
+        profilePicture = 'data:image/jpg;base64,' + fs.readFileSync(img[0].path).toString('base64')
     }
 
     const picturesArray = req.files['picturesOfWork']

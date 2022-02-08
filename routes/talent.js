@@ -2,6 +2,10 @@ const router = require('express').Router()
 const { getAllTalents } = require('../controller/talent')
     // const authEmployer = require('../middleware/authEmployer')
 
+// GET /talentsAll?category=IT&servicesOffered=Graphics Designer&numericFilters=price>5000,rating>4.5&sort
+router.get('/talentsAll', getAllTalents)
+
+module.exports = router
 
 // GET /talents?skill=Analyst&price=4000
 // GET /talents?limit=10&skip=10
@@ -40,8 +44,3 @@ const { getAllTalents } = require('../controller/talent')
 //         console.log(error)
 //     }
 // })
-
-// GET /talentsAll?category=IT&servicesOffered=Graphics Designer&numericFilters=price>5000,rating>4.5&sort
-router.get('/talentsAll', getAllTalents)
-
-module.exports = router

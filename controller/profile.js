@@ -2,7 +2,8 @@ const Portfolio = require('../models/portfolio')
 const { StatusCodes } = require('http-status-codes')
 const res = require('express/lib/response')
 const fs = require("fs");
-
+const nodemailer = require('nodemailer');
+const Talent = require('../models/talent');
 
 //Profile page displays the data from portfolio module through get request
 const getAuthProfile = (req, res) => {
@@ -35,7 +36,7 @@ const updateProfile = async(req, res) => {
     let profilePicture = undefined;
     // if image was uploaded
     if (img) {
-        profilePicture = fs.readFileSync(img[0].path).toString('base64')
+        profilePicture = 'data:image/jpg;base64,' + fs.readFileSync(img[0].path).toString('base64')
     }
     const picturesArray = req.files['picturesOfWork']
     let picturesOfWork = []
@@ -125,8 +126,8 @@ const updateProfile = async(req, res) => {
         projectsDone,
         price: req.body.price,
         picturesOfWork,
-        servicesOffered:req.body.serviceOffered,
-        category:req.body.category,
+        servicesOffered: req.body.serviceOffered,
+        category: req.body.category,
         createdBy: req.user._id
     }
 
@@ -160,10 +161,46 @@ const deleteProfile = async(req, res) => {
     res.status(StatusCodes.OK).send()
 }
 
-//when employer clicks hire it navigates to different page by posting some response 
-
+// when employer clicks hire it navigates to different page by posting some response 
 const hireTalent = async(req, res) => {
     res.send('You are authorized...')
+}
+
+// Send mail to talent once employer hires 
+const handleHireTalent = async(req, res) => {
+    const transport = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "84bab139c6147d",
+            pass: "bff5ebe28877cd"
+        }
+    });
+
+    try {
+        const talent = await Talent.findOne({ _id: req.params.id })
+
+        const mailOptions = {
+            from: req.body.name + ' ' + req.user.email,
+            to: talent.email,
+            subject: 'Hire Request',
+            text: req.body.message,
+            html: `Mobile Number: ${req.body.mobileNumber} <br/>
+                    Address: ${req.body.address} <br/>
+                    Hire Duration: ${req.body.hireDuration} <br/>
+                    Message: ${req.body.message} <br/>`
+        }
+
+        transport.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(400).json({ error: error.message })
+            }
+        })
+
+        res.status(200).json({ message: 'Mail delieverd' })
+    } catch (error) {
+        res.status(500).json({ error: 'Cannot find the talent' })
+    }
 }
 
 module.exports = {
@@ -172,4 +209,5 @@ module.exports = {
     updateProfile,
     deleteProfile,
     hireTalent,
+    handleHireTalent,
 }

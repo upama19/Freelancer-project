@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const authTalent = require("../middleware/authTalent");
 const upload = require("../middleware/multer");
-const fs = require("fs");
-const Portfolio = require('../models/portfolio');
 const { postPortfolioForm } = require('../controller/portfolio')
     // const { storePortfolioForm } = require('../controller/portfolio')
 

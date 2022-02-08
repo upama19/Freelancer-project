@@ -49,11 +49,7 @@ const PortfolioSchema = new mongoose.Schema({
     servicesOffered: {
         type: String,
         required: true
-    },
-    rating: {
-        type: Number,
     }
-
 }, { timestamps: true })
 
 // PortfolioSchema.methods.toJSON = function() {
