@@ -5,18 +5,21 @@ const fs = require("fs");
 
 
 //Profile page displays the data from portfolio module through get request
-const getAuthProfile = (req, res) => {
-    res.json(req.user)
+const getAuthProfile = async (req, res) => {
+    const profile = await Portfolio.findOne({
+        createdBy: req.user._id,
+    })
+
+    res.json({ user: req.user, profile: profile })
 }
 
-const getProfile = async(req, res) => {
+const getProfile = async (req, res) => {
     const {
-        user: { _id: userId },
+        params: { id: profileId },
     } = req
 
     const profile = await Portfolio.findOne({
-        _id: userId,
-
+        _id: profileId,
     })
 
     if (!profile) {
@@ -29,7 +32,7 @@ const getProfile = async(req, res) => {
 }
 
 //talent has access to update their profile directlt from their profile
-const updateProfile = async(req, res) => {
+const updateProfile = async (req, res) => {
 
     const img = req.files['profilePicture']
     let profilePicture = undefined;
@@ -42,7 +45,7 @@ const updateProfile = async(req, res) => {
     if (picturesArray) {
         picturesOfWork = picturesArray.map(pictureFile => {
             let picture = fs.readFileSync(pictureFile.path)
-                // return picture.toString('base64')
+            // return picture.toString('base64')
             return {
                 workPicture: picture.toString('base64')
             }
@@ -125,8 +128,8 @@ const updateProfile = async(req, res) => {
         projectsDone,
         price: req.body.price,
         picturesOfWork,
-        servicesOffered:req.body.serviceOffered,
-        category:req.body.category,
+        servicesOffered: req.body.serviceOffered,
+        category: req.body.category,
         createdBy: req.user._id
     }
 
@@ -140,7 +143,7 @@ const updateProfile = async(req, res) => {
 
 //talent can delete their profile if thet want to
 
-const deleteProfile = async(req, res) => {
+const deleteProfile = async (req, res) => {
 
 
     const {
@@ -162,7 +165,7 @@ const deleteProfile = async(req, res) => {
 
 //when employer clicks hire it navigates to different page by posting some response 
 
-const hireTalent = async(req, res) => {
+const hireTalent = async (req, res) => {
     res.send('You are authorized...')
 }
 

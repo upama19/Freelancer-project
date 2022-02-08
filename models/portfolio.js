@@ -24,6 +24,7 @@ const PortfolioSchema = new mongoose.Schema({
     projectsDone: [{
         project: {
             type: String,
+            required: true
         }
     }],
     price: {
