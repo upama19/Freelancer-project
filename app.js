@@ -11,6 +11,7 @@ const authUser = require('./routes/authUser')
 const portfolio = require('./routes/portfolio')
 const talent = require('./routes/talent')
 const profile = require('./routes/profile')
+const rating = require('./routes/rating')
     //const authenticateTalent = require('./middleware/authentication')
 
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use(authUser)
 app.use(portfolio)
 app.use(talent)
 app.use(profile)
+app.use(rating)
 
 
 app.get('/', (req, res) => {

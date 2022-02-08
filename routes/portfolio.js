@@ -20,7 +20,7 @@ const picturesUpload = upload.fields([
 
 router.post("/talent/my_portfolio", authTalent, picturesUpload, postPortfolioForm,
     (error, req, res, next) => {
-        res.status(400).send(error);
+        res.status(400).json({message:error});
     });
 
 module.exports = router;

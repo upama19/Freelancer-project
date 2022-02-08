@@ -6,22 +6,25 @@ const nodemailer = require('nodemailer');
 const Talent = require('../models/talent');
 
 //Profile page displays the data from portfolio module through get request
-const getAuthProfile = (req, res) => {
-    res.json(req.user)
+const getAuthProfile = async (req, res) => {
+    const profile = await Portfolio.findOne({
+        createdBy: req.user._id,
+    })
+
+    res.json({ user: req.user, profile: profile })
 }
 
-const getProfile = async(req, res) => {
+const getProfile = async (req, res) => {
     const {
-        user: { _id: userId },
+        params: { id: profileId },
     } = req
 
     const profile = await Portfolio.findOne({
-        _id: userId,
-
+        _id: profileId,
     })
 
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
@@ -30,7 +33,7 @@ const getProfile = async(req, res) => {
 }
 
 //talent has access to update their profile directlt from their profile
-const updateProfile = async(req, res) => {
+const updateProfile = async (req, res) => {
 
     const img = req.files['profilePicture']
     let profilePicture = undefined;
@@ -43,7 +46,7 @@ const updateProfile = async(req, res) => {
     if (picturesArray) {
         picturesOfWork = picturesArray.map(pictureFile => {
             let picture = fs.readFileSync(pictureFile.path)
-                // return picture.toString('base64')
+            // return picture.toString('base64')
             return {
                 workPicture: picture.toString('base64')
             }
@@ -83,25 +86,29 @@ const updateProfile = async(req, res) => {
     })
 
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
     if (fullName === '') {
-        throw new Error('Name cannot be empty')
+        
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Name cannot be empty'})
     }
     if (description === '') {
-        throw new Error('Description cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Description cannot be empty'})
     }
 
     if (price === '') {
-        throw new Error('Price cannot be empty')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Price cannot be empty' })
     }
     if (category === '') {
-        throw new Error('Categopry cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Category cannot be empty'})
     }
     if (serviceOffered === '') {
-        throw new Error('ServviceOfered cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'ServviceOffered cannot be empty' })
     }
 
     if (listOfSkills.length === 0) {
@@ -135,13 +142,13 @@ const updateProfile = async(req, res) => {
     profile = await Portfolio.findByIdAndUpdate({ _id: profileId, createdBy: userId },
         req.body, { new: true, runValidators: true })
 
-    res.status(StatusCodes.OK).send(profile)
+    res.status(StatusCodes.OK).json({profile})
 
 }
 
 //talent can delete their profile if thet want to
 
-const deleteProfile = async(req, res) => {
+const deleteProfile = async (req, res) => {
 
 
     const {
@@ -154,16 +161,17 @@ const deleteProfile = async(req, res) => {
 
     })
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
-    res.status(StatusCodes.OK).send()
+    res.status(StatusCodes.OK).json({message:"Your profile has been successfully deleted."})
 }
 
 // when employer clicks hire it navigates to different page by posting some response 
 const hireTalent = async(req, res) => {
-    res.send('You are authorized...')
+    res.status(StatusCodes.OK).json({message:"You can provide your information now"})
 }
 
 // Send mail to talent once employer hires 

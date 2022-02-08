@@ -6,7 +6,7 @@ const authEmployer = async (req, res, next) => {
     const authHeader = req.headers.authorization
     if(!authHeader || !authHeader.startsWith('Bearer ')){
 
-        throw new Error('Authentication Invalid')
+        return res.status(401).json({message:'Authentication Invalid'})
     }
 
     const token = authHeader.split(' ')[1]
@@ -15,7 +15,7 @@ const authEmployer = async (req, res, next) => {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
 
         if (payload.role === 'talent') {
-            return res.status(400).send('Talent cannot access this resource')
+            return res.status(400).json({message: 'Talent cannot access this resource'})
         }
 
         const user = await Employer.findById({ _id: payload.userId })

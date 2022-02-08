@@ -1,6 +1,5 @@
 const Portfolio = require('../models/portfolio')
-const fs = require("fs")
-
+const fs = require('fs')
 const postPortfolioForm = async(req, res) => {
     const img = req.files['profilePicture']
     let profilePicture = undefined;
@@ -8,7 +7,6 @@ const postPortfolioForm = async(req, res) => {
     if (img) {
         profilePicture = 'data:image/jpg;base64,' + fs.readFileSync(img[0].path).toString('base64')
     }
-
     const picturesArray = req.files['picturesOfWork']
     let picturesOfWork = []
     if (picturesArray) {
@@ -60,7 +58,7 @@ const postPortfolioForm = async(req, res) => {
             return res.status(400).json({ error: 'Your portfolio already exists' })
         }
 
-        res.status(400).send(error.message)
+        res.status(400).json({ error: error.message })
     }
 
     //res.send("You are a freelancer and you can access this resource");

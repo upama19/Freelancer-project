@@ -44,10 +44,7 @@ const talentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // hiredBy: {
-    //     type: mongoose.Schema.Types.ObjectId
-
-    // }
+    
 })
 
 talentSchema.virtual('portfolio', {
