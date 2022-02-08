@@ -11,16 +11,16 @@ const getAuthProfile = (req, res) => {
 
 const getProfile = async(req, res) => {
     const {
-        user: { _id: userId },
+        params: { id: profileId },
     } = req
 
     const profile = await Portfolio.findOne({
-        _id: userId,
+        _id: profileId,
 
     })
 
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
@@ -82,25 +82,29 @@ const updateProfile = async(req, res) => {
     })
 
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
     if (fullName === '') {
-        throw new Error('Name cannot be empty')
+        
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Name cannot be empty'})
     }
     if (description === '') {
-        throw new Error('Description cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Description cannot be empty'})
     }
 
     if (price === '') {
-        throw new Error('Price cannot be empty')
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Price cannot be empty' })
     }
     if (category === '') {
-        throw new Error('Categopry cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Category cannot be empty'})
     }
     if (serviceOffered === '') {
-        throw new Error('ServviceOfered cannot be empty')
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'ServviceOffered cannot be empty' })
     }
 
     if (listOfSkills.length === 0) {
@@ -134,7 +138,7 @@ const updateProfile = async(req, res) => {
     profile = await Portfolio.findByIdAndUpdate({ _id: profileId, createdBy: userId },
         req.body, { new: true, runValidators: true })
 
-    res.status(StatusCodes.OK).send(profile)
+    res.status(StatusCodes.OK).json({profile})
 
 }
 
@@ -153,17 +157,18 @@ const deleteProfile = async(req, res) => {
 
     })
     if (!profile) {
-        throw new Error(`No talent with ID ${profileId} found`)
+
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
 
     }
 
-    res.status(StatusCodes.OK).send()
+    res.status(StatusCodes.OK).json({message:"Your profile has been successfully deleted."})
 }
 
 //when employer clicks hire it navigates to different page by posting some response 
 
 const hireTalent = async(req, res) => {
-    res.send('You are authorized...')
+    res.status(StatusCodes.OK).json({message:"You can provide your information now"})
 }
 
 module.exports = {

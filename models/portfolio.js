@@ -1,4 +1,5 @@
 // const { ref } = require('joi')
+const { boolean } = require('joi')
 const mongoose = require('mongoose')
 
 const PortfolioSchema = new mongoose.Schema({
@@ -50,9 +51,15 @@ const PortfolioSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    rating: {
-        type: Number,
-    }
+    averageRating:{
+        type:Number,
+        default: 0,
+        maxlength:5,
+    },
+    available:{
+        type: Boolean,
+        default:true,
+    },
 
 }, { timestamps: true })
 
