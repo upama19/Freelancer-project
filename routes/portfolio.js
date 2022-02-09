@@ -18,9 +18,6 @@ const picturesUpload = upload.fields([
     { name: "picturesOfWork", maxCount: 12 },
 ]);
 
-router.post("/talent/my_portfolio", authTalent, picturesUpload, postPortfolioForm,
-    (error, req, res, next) => {
-        res.status(400).json({message:error});
-    });
+router.post("/talent/my_portfolio", authTalent, postPortfolioForm);
 
 module.exports = router;

@@ -19,8 +19,8 @@ const PortfolioSchema = new mongoose.Schema({
     listOfSkills: [{
         skill: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     }],
     projectsDone: [{
         project: {

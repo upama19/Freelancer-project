@@ -1,9 +1,13 @@
 const Portfolio = require('../models/portfolio')
-const { StatusCodes } = require('http-status-codes')
+const {
+    StatusCodes
+} = require('http-status-codes')
 const res = require('express/lib/response')
 const fs = require("fs");
 const nodemailer = require('nodemailer');
 const Talent = require('../models/talent');
+const cloudinary = require('cloudinary').v2;
+
 
 //Profile page displays the data from portfolio module through get request
 const getAuthProfile = async (req, res) => {
@@ -11,12 +15,17 @@ const getAuthProfile = async (req, res) => {
         createdBy: req.user._id,
     })
 
-    res.json({ user: req.user, profile: profile })
+    res.json({
+        user: req.user,
+        profile: profile
+    })
 }
 
 const getProfile = async (req, res) => {
     const {
-        params: { id: profileId },
+        params: {
+            id: profileId
+        },
     } = req
 
     const profile = await Portfolio.findOne({
@@ -24,34 +33,30 @@ const getProfile = async (req, res) => {
     })
 
     if (!profile) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: `No talent with ID ${profileId} found`
+        })
 
     }
 
-    res.status(StatusCodes.OK).json({ profile })
+    res.status(StatusCodes.OK).json({
+        profile
+    })
 
 }
 
 //talent has access to update their profile directlt from their profile
 const updateProfile = async (req, res) => {
 
-    const img = req.files['profilePicture']
-    let profilePicture = undefined;
-    // if image was uploaded
-    if (img) {
-        profilePicture = 'data:image/jpg;base64,' + fs.readFileSync(img[0].path).toString('base64')
-    }
-    const picturesArray = req.files['picturesOfWork']
-    let picturesOfWork = []
-    if (picturesArray) {
-        picturesOfWork = picturesArray.map(pictureFile => {
-            let picture = fs.readFileSync(pictureFile.path)
-            // return picture.toString('base64')
-            return {
-                workPicture: picture.toString('base64')
-            }
-        })
-    }
+    const img = await cloudinary.uploader.upload(
+        req.files.profilePicture.tempFilePath, {
+            use_filename: true,
+            folder: 'file-upload',
+        }
+    );
+    fs.unlinkSync(req.files.profilePicture.tempFilePath);
+    console.log(img);
+
     const skills = req.body.listOfSkills;
     let listOfSkills = [];
     if (skills) {
@@ -72,13 +77,20 @@ const updateProfile = async (req, res) => {
         });
     }
 
-
-
-
     const {
-        body: { fullName, description, price, category, serviceOffered },
-        user: { _id: userId },
-        params: { id: profileId },
+        body: {
+            fullName,
+            description,
+            price,
+            category,
+            serviceOffered
+        },
+        user: {
+            _id: userId
+        },
+        params: {
+            id: profileId
+        },
     } = req
     let profile = await Portfolio.findOne({
         _id: profileId,
@@ -86,29 +98,36 @@ const updateProfile = async (req, res) => {
     })
 
     if (!profile) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
-
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: `No talent with ID ${profileId} found`
+        })
     }
 
     if (fullName === '') {
-        
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Name cannot be empty'})
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: 'Name cannot be empty'
+        })
     }
     if (description === '') {
-
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Description cannot be empty'})
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: 'Description cannot be empty'
+        })
     }
 
     if (price === '') {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Price cannot be empty' })
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: 'Price cannot be empty'
+        })
     }
     if (category === '') {
-
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Category cannot be empty'})
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: 'Category cannot be empty'
+        })
     }
     if (serviceOffered === '') {
-
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'ServviceOffered cannot be empty' })
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: 'ServviceOffered cannot be empty'
+        })
     }
 
     if (listOfSkills.length === 0) {
@@ -117,9 +136,6 @@ const updateProfile = async (req, res) => {
     if (projectsDone.length === 0) {
         projectsDone = projectsDone.concat(profile.projectsDone)
     }
-    if (picturesOfWork.length === 0) {
-        picturesOfWork = picturesOfWork.concat(profile.picturesOfWork)
-    }
 
     // listOfSkills = profile.listOfSkills.concat(listOfSkills)
     // projectsDone = profile.projectsDone.concat(projectsDone)
@@ -127,33 +143,40 @@ const updateProfile = async (req, res) => {
 
     req.body = {
         fullName: req.body.fullName,
-        profilePicture,
+        profilePicture: img.secure_url,
         description: req.body.description,
         listOfSkills,
         projectsDone,
         price: req.body.price,
-        picturesOfWork,
         servicesOffered: req.body.serviceOffered,
         category: req.body.category,
         createdBy: req.user._id
     }
 
+    profile = await Portfolio.findByIdAndUpdate({
+            _id: profileId,
+            createdBy: userId
+        },
+        req.body, {
+            new: true,
+            runValidators: true
+        })
 
-    profile = await Portfolio.findByIdAndUpdate({ _id: profileId, createdBy: userId },
-        req.body, { new: true, runValidators: true })
-
-    res.status(StatusCodes.OK).json({profile})
-
+    res.status(StatusCodes.OK).json({
+        profile
+    })
 }
 
 //talent can delete their profile if thet want to
 
 const deleteProfile = async (req, res) => {
-
-
     const {
-        params: { id: profileId },
-        user: { _id: userId }
+        params: {
+            id: profileId
+        },
+        user: {
+            _id: userId
+        }
     } = req
     const profile = await Portfolio.findByIdAndRemove({
         _id: profileId,
@@ -161,21 +184,25 @@ const deleteProfile = async (req, res) => {
 
     })
     if (!profile) {
-
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: `No talent with ID ${profileId} found` })
-
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: `No talent with ID ${profileId} found`
+        })
     }
 
-    res.status(StatusCodes.OK).json({message:"Your profile has been successfully deleted."})
+    res.status(StatusCodes.OK).json({
+        message: "Your profile has been successfully deleted."
+    })
 }
 
 // when employer clicks hire it navigates to different page by posting some response 
-const hireTalent = async(req, res) => {
-    res.status(StatusCodes.OK).json({message:"You can provide your information now"})
+const hireTalent = async (req, res) => {
+    res.status(StatusCodes.OK).json({
+        message: "You can provide your information now"
+    })
 }
 
 // Send mail to talent once employer hires 
-const handleHireTalent = async(req, res) => {
+const handleHireTalent = async (req, res) => {
     const transport = nodemailer.createTransport({
         host: "smtp.mailtrap.io",
         port: 2525,
@@ -186,7 +213,9 @@ const handleHireTalent = async(req, res) => {
     });
 
     try {
-        const talent = await Talent.findOne({ _id: req.params.id })
+        const talent = await Talent.findOne({
+            _id: req.params.id
+        })
 
         const mailOptions = {
             from: req.body.name + ' ' + req.user.email,
@@ -201,13 +230,19 @@ const handleHireTalent = async(req, res) => {
 
         transport.sendMail(mailOptions, (error, info) => {
             if (error) {
-                return res.status(400).json({ error: error.message })
+                return res.status(400).json({
+                    error: error.message
+                })
             }
         })
 
-        res.status(200).json({ message: 'Mail delieverd' })
+        res.status(200).json({
+            message: 'Mail delieverd'
+        })
     } catch (error) {
-        res.status(500).json({ error: 'Cannot find the talent' })
+        res.status(500).json({
+            error: 'Cannot find the talent'
+        })
     }
 }
 

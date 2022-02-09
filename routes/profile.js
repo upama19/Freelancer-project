@@ -10,7 +10,7 @@ const picturesUpload = upload.fields([
 ]);
 
 router.route('/profile/me').get(authenticateTalent, getAuthProfile)
-router.route('/talent/profile/:id').get(getProfile).patch(authenticateTalent, picturesUpload, updateProfile).delete(authenticateTalent, deleteProfile)
+router.route('/talent/profile/:id').get(getProfile).patch(authenticateTalent,updateProfile).delete(authenticateTalent, deleteProfile)
 router.route('/employer/talent/profile/hire/:id').get(authenticateEmployer, hireTalent)
 router.route('/employer/talent/profile/hire/:id').post(authenticateEmployer, handleHireTalent)
 
