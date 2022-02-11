@@ -14,6 +14,7 @@ const getAuthProfile = async (req, res) => {
     const profile = await Portfolio.findOne({
         createdBy: req.user._id,
     })
+    console.log(profile)
 
     res.json({
         user: req.user,
@@ -47,32 +48,37 @@ const getProfile = async (req, res) => {
 
 //talent has access to update their profile directlt from their profile
 const updateProfile = async (req, res) => {
-
-    const img = await cloudinary.uploader.upload(
+    console.log('hello')
+    console.log(req.files)
+    let img 
+    if(req.files !==  null){
+        img = await cloudinary.uploader.upload(
         req.files.profilePicture.tempFilePath, {
             use_filename: true,
             folder: 'file-upload',
         }
     );
     fs.unlinkSync(req.files.profilePicture.tempFilePath);
-    console.log(img);
+    }
+    // console.log(img);
 
     const skills = req.body.listOfSkills;
-    let listOfSkills = [];
+    const listOfSkills = [];
     if (skills) {
-        skills.forEach((skill) => {
+        Object.keys(skills).forEach(function(skill) {
             listOfSkills.push({
-                skill,
+                skill:skills[skill]
             });
         });
     }
+    console.log(listOfSkills)
 
     const projects = req.body.projectsDone;
-    let projectsDone = [];
+    const projectsDone = [];
     if (projects) {
-        projects.forEach((project) => {
+        Object.keys(projects).forEach((project) => {
             projectsDone.push({
-                project,
+                project:projects[project]
             });
         });
     }
@@ -83,8 +89,10 @@ const updateProfile = async (req, res) => {
             description,
             price,
             category,
-            serviceOffered
+            serviceOffered,
+            profilePicture,
         },
+
         user: {
             _id: userId
         },
@@ -140,10 +148,16 @@ const updateProfile = async (req, res) => {
     // listOfSkills = profile.listOfSkills.concat(listOfSkills)
     // projectsDone = profile.projectsDone.concat(projectsDone)
     // picturesOfWork = profile.picturesOfWork.concat(picturesOfWork)
-
+    if(img)
+    {
+        image = image.secure_url
+    }
+    else{
+        image = req.body.profilePicture
+    }
     req.body = {
         fullName: req.body.fullName,
-        profilePicture: img.secure_url,
+        profilePicture: image,
         description: req.body.description,
         listOfSkills,
         projectsDone,
@@ -153,7 +167,8 @@ const updateProfile = async (req, res) => {
         createdBy: req.user._id
     }
 
-    profile = await Portfolio.findByIdAndUpdate({
+    console.log(req.body)
+    const updatedProfile = await Portfolio.findByIdAndUpdate({
             _id: profileId,
             createdBy: userId
         },
@@ -161,9 +176,10 @@ const updateProfile = async (req, res) => {
             new: true,
             runValidators: true
         })
+    console.log(updatedProfile)
 
     res.status(StatusCodes.OK).json({
-        profile
+        updatedProfile
     })
 }
 

@@ -16,7 +16,10 @@ const postPortfolioForm = async (req, res) => {
         }
     );
     fs.unlinkSync(req.files.profilePicture.tempFilePath);
-    console.log(img);
+    // console.log(img);
+    console.log(req)
+    console.log(  req.body.listOfSkills[0])
+    // console.log(profilePicture)
 
     // if (img) {
     //     profilePicture = 'data:image/jpg;base64,' + fs.readFileSync(img[0].path).toString('base64')
@@ -36,19 +39,21 @@ const postPortfolioForm = async (req, res) => {
     const skills = req.body.listOfSkills;
     const listOfSkills = [];
     if (skills) {
-        skills.forEach((skill) => {
+        Object.keys(skills).forEach(function(skill) {
             listOfSkills.push({
-                skill,
+                skill:skills[skill]
             });
         });
     }
+    console.log(listOfSkills)
 
     const projects = req.body.projectsDone;
     const projectsDone = [];
     if (projects) {
-        projects.forEach((project) => {
+        
+        Object.keys(projects).forEach((project) => {
             projectsDone.push({
-                project,
+                project:projects[project]
             });
         });
     }
