@@ -215,9 +215,9 @@ const handleHireTalent = async (req, res) => {
   });
   console.log(req.body);
   try {
-    const talent = await Portfolio.findById(req.body.talentId);
-
-    console.log(talent);
+    const profile = await Portfolio.findById(req.body.talentId);
+    const talent = await Talent.findById(profile.createdBy)
+    console.log(profile);
 
     const mailOptions = {
       from: req.body.name + ' <' + req.user.email + '>',
