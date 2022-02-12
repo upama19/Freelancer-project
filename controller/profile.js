@@ -213,7 +213,7 @@ const handleHireTalent = async (req, res) => {
       pass: 'bff5ebe28877cd',
     },
   });
-  console.log(req.body.talentId);
+  console.log(req.body);
   try {
     const talent = await Portfolio.findById(req.body.talentId);
 
