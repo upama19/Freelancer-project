@@ -25,7 +25,7 @@ const getAllTalents = async(req, res) => {
 
         let filters = numericFilters.replace(regExp, (match) => `-${operatorMap[match]}-`) // price<5000 -> price-$gt-5000
 
-        const options = ['price', 'rating']
+        const options = ['price', 'averageRating']
         filters = filters.split(',').forEach((item) => {
             const [field, operator, value] = item.split('-')
 

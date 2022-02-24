@@ -9,6 +9,10 @@ const postPortfolioForm = async (req, res) => {
     // let profilePicture = undefined;
     // // if image was uploaded
 
+    console.log('hello');
+    console.log(req.body);
+    console.log(req.files);
+
     const img = await cloudinary.uploader.upload(
         req.files.profilePicture.tempFilePath, {
             use_filename: true,

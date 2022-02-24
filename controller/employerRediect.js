@@ -4,14 +4,19 @@ const Employer = require('../models/employer')
 
 
 const getAuthEmployer = async (req, res) => {
-    const profile = await Employer.findOne({
-        _id: req.user._id,
-    })
-
-    res.json({
-        user: req.user,
-        profile: profile
-    })
+    try {
+        const profile = await Employer.findOne({
+            _id: req.user._id,
+        })
+    
+        res.json({
+            user: req.user,
+            profile: profile
+        })
+    } catch (error) {
+        res.status(200).json({ message: "Success" });
+    }
+    
 }
 
 
